@@ -1,6 +1,8 @@
 # CMPT461-Project
 This is the project repo for CMPT461
 
+pip install --user virtualenv
+
 python -m venv ./env
 
 install models from: https://drive.google.com/drive/folders/1fMl7qepWqWvROlWvwLyr9TFGaAUBIYtW
