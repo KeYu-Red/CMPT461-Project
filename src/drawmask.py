@@ -7,6 +7,7 @@ class DrawMask:
         h, w, _ = image.shape
         self.img_mask = np.zeros((h,w), dtype=np.uint8)
         self.brush_size = brush_size
+        self.name = "Press Q to quit | Press E to exit without saving | Press +/- to change the brush size"
 
 
     def draw_circle(self, event, x, y, flags, param):
@@ -18,11 +19,11 @@ class DrawMask:
             cv2.circle(self.img_mask, (x, y), self.brush_size, (255, 255, 255), -1)
     
     def draw(self):
-        cv2.namedWindow('image')
-        cv2.setMouseCallback('image', self.draw_circle)
+        cv2.namedWindow(self.name)
+        cv2.setMouseCallback(self.name, self.draw_circle)
 
         while (1):
-            cv2.imshow('image', self.img)
+            cv2.imshow(self.name, self.img)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 cv2.imwrite("mask.jpg", self.img_mask)
                 break
