@@ -7,7 +7,7 @@ class DrawMask:
         h, w, _ = image.shape
         self.img_mask = np.zeros((h,w), dtype=np.uint8)
         self.brush_size = brush_size
-        self.name = "Press Q to quit | Press E to exit without saving | Press +/- to change the brush size"
+        self.name = "Press Q to quit    |   Press E to exit without saving    |   Press +/- to change the brush size"
 
 
     def draw_circle(self, event, x, y, flags, param):

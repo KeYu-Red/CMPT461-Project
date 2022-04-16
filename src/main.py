@@ -3,8 +3,9 @@ import cv2
 import os.path
 import drawmask as dm
 
-def main():
 
+
+def main():
     
     title = [sg.Text("CMPT461 Project", size=(60, 1), justification="center")]
     file_list_column = [
@@ -15,7 +16,6 @@ def main():
             sg.Listbox(values=[], enable_events=True, size=(20, 5), key="-FILE LIST-")
         ]
     ]
-
     
     playVideo = [sg.Radio("Play Video", "Radio", size=(10, 1), default=True, key="-PLAY-")]
     pauseVideo = [
@@ -52,8 +52,8 @@ def main():
     firstMaskDrawing = True
     currentFrame = []
     backgroundMask = []
-    globalBackgroundMask = []
-    bkgr = []
+    new_background = []
+    temp_bkgr = []
 
 
     ############################################################
@@ -108,34 +108,58 @@ def main():
         elif values["-PLAY-"]:
             allowDrawMask = False
             displayVideo = True
-
+        
         if displayVideo == True and captured == True:
             ret, frame = cap.read()
-            currentFrame = frame
-            frame = cv2.resize(frame, (600, 400))
-            imgbytes = cv2.imencode(".png", frame)[1].tobytes()
-            cap.get(cv2.CAP_PROP_POS_FRAMES)
-            window["-IMAGE-"].update(data=imgbytes)
+            if ret:
+                currentFrame = frame
+                frame = cv2.resize(frame, (600, 400))
+                imgbytes = cv2.imencode(".png", frame)[1].tobytes()
+                cap.get(cv2.CAP_PROP_POS_FRAMES)
+                window["-IMAGE-"].update(data=imgbytes)
+            else:
+                cap = cv2.VideoCapture(video_filename)
+                displayNewVideo = False
+                captured = True
         
         if drawBGMask == True:
             drawBGMask = False
+            # BG Mask from current frame
             backgroundMask = dm.DrawMask(image=currentFrame.copy(), brush_size=int(values["-BRUSH-SIZE-"])).draw()
+            # Get current BG
+            (thresh, blackAndWhiteImage) = cv2.threshold(backgroundMask, 127, 255, cv2.THRESH_BINARY)
+            temp_bkgr = cv2.bitwise_and(currentFrame, currentFrame, mask=blackAndWhiteImage)
+
+
+            # if firstMaskDrawing:
+            #     firstMaskDrawing = False
+            #     cv2.imwrite("background.jpg", temp_bkgr)
+            #     new_background = temp_bkgr.copy()
+            # else: 
+            #     overall_background = cv2.imread("background.jpg")
+            #     if values["-BRUSH-OPTION-"] == 2: 
+            #         new_background = cv2.subtract(overall_background, temp_bkgr )
+            #     else:
+            #         new_background = cv2.add(overall_background, temp_bkgr )
+            #     cv2.imwrite("background.jpg", new_background)
             if firstMaskDrawing:
-                globalBackgroundMask = backgroundMask.copy()
                 firstMaskDrawing = False
+                new_background = temp_bkgr.copy()
             else:
-                if values["-BRUSH-OPTION-"] == 2: 
-                    globalBackgroundMask = cv2.subtract(globalBackgroundMask, backgroundMask )
+                overall_background = cv2.imread("background.jpg")
+                if values["-BRUSH-OPTION-"] == 2:
+                    overall_background[temp_bkgr > 0] = 0
+                    new_background = overall_background.copy()
                 else:
-                    globalBackgroundMask = cv2.add(globalBackgroundMask, backgroundMask )
+                    overall_background[temp_bkgr > 0] = 0
+                    new_background = cv2.add(overall_background, temp_bkgr)
+
+            cv2.imwrite("background.jpg", new_background)
             
-        if globalBackgroundMask != []:
-            (thresh, blackAndWhiteImage) = cv2.threshold(globalBackgroundMask, 127, 255, cv2.THRESH_BINARY)
-            bkgr = cv2.bitwise_and(currentFrame, currentFrame, mask=blackAndWhiteImage)
-            cv2.imwrite("background.jpg", bkgr)
+        if len(new_background) != 0:
             # Display on APP
-            backgroundMaskdisplay = cv2.resize(bkgr, display_size)
-            imgbytes = cv2.imencode(".png", backgroundMaskdisplay)[1].tobytes()
+            backgrounddisplay = cv2.resize(new_background, display_size)
+            imgbytes = cv2.imencode(".png", backgrounddisplay)[1].tobytes()
             cap.get(cv2.CAP_PROP_POS_FRAMES)
             window["-BG-"].update(data=imgbytes)
 
