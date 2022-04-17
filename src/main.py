@@ -131,7 +131,8 @@ def main():
         if drawBGMask == True:
             drawBGMask = False
             # BG Mask from current frame
-            backgroundMask = dm.DrawMask(image=currentFrame.copy(), brush_size=int(values["-BRUSH-SIZE-"])).draw()
+            [isSavedMask, backgroundMask] = dm.DrawMask(image=currentFrame.copy(), brush_size=int(values["-BRUSH-SIZE-"])).draw()
+            if not isSavedMask: continue
             # Get current BG
             (thresh, blackAndWhiteImage) = cv2.threshold(backgroundMask, 127, 255, cv2.THRESH_BINARY)
             temp_bkgr = cv2.bitwise_and(currentFrame, currentFrame, mask=blackAndWhiteImage)
