@@ -5,7 +5,17 @@ import drawmask as dm
 import os.path
 import numpy as np
 import torch
+import gdown
 from torchvision.transforms.functional import to_tensor, to_pil_image
+
+def get_models():
+    model_folder = "../model/"
+    if os.path.exists(model_folder):
+        os.remove(model_folder)
+    os.mkdir(model_folder)
+
+    url = "https://drive.google.com/drive/folders/1fMl7qepWqWvROlWvwLyr9TFGaAUBIYtW?usp=sharing"
+    gdown.download_folder(url, output=model_folder)
 
 def run_model(background_image = None):
     device = torch.device('cpu')
@@ -23,6 +33,8 @@ def run_model(background_image = None):
     new_vid = cv2.VideoWriter("final_vid.avi", 0, frame_rate, (w, h))
     new_vid2 = cv2.VideoWriter("final_vid_green_screen.avi", 0, frame_rate, (w, h))
     run = True
+
+    get_models()
 
     model = torch.jit.load("../model/torchscript_resnet50_fp32.pth").to(torch.device('cpu')).eval()
     model.backbone_scale = 0.25
