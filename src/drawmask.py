@@ -21,11 +21,12 @@ class DrawMask:
     def draw(self):
         cv2.namedWindow(self.name)
         cv2.setMouseCallback(self.name, self.draw_circle)
-
+        isSavedMask = False
         while (1):
             cv2.imshow(self.name, self.img)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 cv2.imwrite("mask.jpg", self.img_mask)
+                isSavedMask = True
                 break
             elif cv2.waitKey(1) & 0xFF == ord('e'):
                 break
@@ -37,5 +38,5 @@ class DrawMask:
                 if self.brush_size < 5: self.brush_size = 5
 
         cv2.destroyAllWindows()
-        return self.img_mask
+        return [ isSavedMask, self.img_mask ]
 
