@@ -2,88 +2,7 @@ import PySimpleGUI as sg
 import cv2
 import os.path
 import drawmask as dm
-import os.path
-import numpy as np
-import torch
-import gdown
-from torchvision.transforms.functional import to_tensor, to_pil_image
-
-def get_models():
-    model_folder = "../model/"
-    if os.path.exists(model_folder):
-        os.remove(model_folder)
-    os.mkdir(model_folder)
-
-    url = "https://drive.google.com/drive/folders/1fMl7qepWqWvROlWvwLyr9TFGaAUBIYtW?usp=sharing"
-    gdown.download_folder(url, output=model_folder)
-
-def run_model(background_image = None):
-    device = torch.device('cpu')
-
-    vid = cv2.VideoCapture("../video/vid_use.mp4")
-    ret, frame = vid.read()
-    h, w, l = frame.shape
-    frame_rate = vid.get(cv2.CAP_PROP_FPS)
-
-    cv2.destroyAllWindows()
-    vid.release()
-
-    vid = cv2.VideoCapture("../video/vid_use.mp4")
-
-    new_vid = cv2.VideoWriter("final_vid.avi", 0, frame_rate, (w, h))
-    new_vid2 = cv2.VideoWriter("final_vid_green_screen.avi", 0, frame_rate, (w, h))
-    run = True
-
-    get_models()
-
-    model = torch.jit.load("../model/torchscript_resnet50_fp32.pth").to(torch.device('cpu')).eval()
-    model.backbone_scale = 0.25
-    model.refine_mode = 'sampling'
-    model.refine_sample_pixels = 80_000
-    bkg = cv2.imread("background.jpg")
-    new_bkg = None
-    if background_image == None:
-        new_bkg = cv2.imread("new_background.jpg")
-    else:
-        new_bkg = background_image.copy()
-
-
-    while run:
-        ret, frame = vid.read()
-        if ret:
-            src = frame.copy()
-            new_bkg = cv2.resize(new_bkg, (src.shape[1], src.shape[0]))
-            src = to_tensor(src).to(torch.device('cpu')).unsqueeze(0)
-            bkg = to_tensor(bkg).to(torch.device('cpu')).unsqueeze(0)
-            new_bkg = to_tensor(new_bkg).to(torch.device('cpu')).unsqueeze(0)
-            # print(src.shape)
-
-            if src.shape[1] <= 2048 and src.shape[2] <= 2048:
-                model.backbone_scale = 1 / 4
-                model.refine_sample_pixels = 80_000
-            else:
-                model.backbone_scale = 1 / 8
-                model.refine_sample_pixels = 320_000
-
-            model = model.to(device)
-
-            pha, fgr = model(src, bkg)[:2]
-
-            com = pha * fgr + (1 - pha) * new_bkg
-            fnl = to_pil_image(com[0].cpu())
-            open_cv_image = np.array(fnl)
-            new_vid.write(open_cv_image)
-
-            com2 = pha * fgr + (1 - pha) * torch.tensor([120 / 255, 255 / 255, 155 / 255], device='cuda').view(1, 3, 1,
-                                                                                                               1)
-            fnl2 = to_pil_image(com2[0].cpu())
-            open_cv_image2 = np.array(fnl2)
-            new_vid2.write(open_cv_image2)
-
-        else:
-            break
-
-
+import model as md
 
 def main():
     title = [sg.Text("CMPT461 Project", size=(60, 1), justification="center")]
@@ -179,7 +98,7 @@ def main():
                 drawBGMask = True
 
         elif event == "-DONE-":
-            run_model()
+            md.run_model()
             print("Final video created as final_vid.mp4 with background image given or the road background")
             print("Final video also created with a green screen")
             break
@@ -244,3 +163,5 @@ def main():
 
 
 main()
+
+# md.run_model()
