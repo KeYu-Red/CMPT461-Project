@@ -15,9 +15,8 @@ def get_models():
     url = "https://drive.google.com/drive/folders/1fMl7qepWqWvROlWvwLyr9TFGaAUBIYtW?usp=sharing"
     gdown.download_folder(url, output=model_folder)
 
-def run_model(background_image = None):
+def run_model(video_path, background_image = None):
     device = torch.device('cpu')
-    video_path = "../video/src.mp4"
     vid = cv2.VideoCapture(video_path)
     ret, frame = vid.read()
     h, w, l = frame.shape

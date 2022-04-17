@@ -98,7 +98,8 @@ def main():
                 drawBGMask = True
 
         elif event == "-DONE-":
-            md.run_model()
+            cv2.imwrite("background.jpg", new_background)
+            md.run_model(video_filename)
             print("Final video created as final_vid.mp4 with background image given or the road background")
             print("Final video also created with a green screen")
             break
@@ -149,7 +150,7 @@ def main():
                     overall_background[temp_bkgr > 0] = 0
                     new_background = cv2.add(overall_background, temp_bkgr)
 
-            cv2.imwrite("background.jpg", new_background)
+
 
         if len(new_background) != 0:
             # Display on APP
