@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-
 class DrawMask:
     def __init__(self, image = None, brush_size = 25):
         self.img = image
@@ -19,7 +18,8 @@ class DrawMask:
             cv2.circle(self.img_mask, (x, y), self.brush_size, (255, 255, 255), -1)
     
     def draw(self):
-        cv2.namedWindow(self.name)
+        cv2.namedWindow(self.name, cv2.WINDOW_NORMAL)
+
         cv2.setMouseCallback(self.name, self.draw_circle)
         isSavedMask = False
         while (1):

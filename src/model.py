@@ -17,8 +17,8 @@ def get_models():
 
 def run_model(background_image = None):
     device = torch.device('cpu')
-
-    vid = cv2.VideoCapture("../video/vid_use.mp4")
+    video_path = "../video/src.mp4"
+    vid = cv2.VideoCapture(video_path)
     ret, frame = vid.read()
     h, w, l = frame.shape
     frame_rate = vid.get(cv2.CAP_PROP_FPS)
@@ -26,7 +26,7 @@ def run_model(background_image = None):
     cv2.destroyAllWindows()
     vid.release()
 
-    vid = cv2.VideoCapture("../video/vid_use.mp4")
+    vid = cv2.VideoCapture(video_path)
 
     new_vid = cv2.VideoWriter("final_vid.avi", 0, frame_rate, (w, h))
     new_vid2 = cv2.VideoWriter("final_vid_green_screen.avi", 0, frame_rate, (w, h))
