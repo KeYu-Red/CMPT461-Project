@@ -70,9 +70,7 @@ class Model:
             ret, frame = vid.read()
             if ret:
                 src = frame.copy()
-                # print(src.dtype)
                 src = to_tensor(src).to(device).unsqueeze(0)
-                # print(src.shape)
 
                 if src.shape[1] <= 2048 and src.shape[2] <= 2048:
                     model.backbone_scale = 1 / 4
