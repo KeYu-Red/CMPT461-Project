@@ -49,9 +49,8 @@ def main():
     allowDrawMask = False
     firstMaskDrawing = True
     currentFrame = []
-    backgroundMask = []
+    cleanFrame = []
     new_background = []
-    temp_bkgr = []
 
 
     ############################################################
@@ -98,10 +97,6 @@ def main():
                 drawBGMask = True
 
         elif event == "-DONE-":
-            cv2.imwrite("background.jpg", new_background)
-            md.run_model(video_filename)
-            print("Final video created as final_vid.mp4 with background image given or the road background")
-            print("Final video also created with a green screen")
             break
 
         elif values["-PAUSE-"]:
@@ -115,10 +110,10 @@ def main():
         if displayVideo == True and captured == True:
             ret, frame = cap.read()
             if ret:
-                # currentFrame = frame
+                cleanFrame = frame.copy()
                 if len(new_background) != 0:
                     frame[new_background > 0] = frame[new_background > 0] + 20
-                currentFrame = frame
+                currentFrame = frame.copy()
                 frame = cv2.resize(frame, (600, 400))
 
                 imgbytes = cv2.imencode(".png", frame)[1].tobytes()
@@ -136,7 +131,7 @@ def main():
             if not isSavedMask: continue
             # Get current BG
             (thresh, blackAndWhiteImage) = cv2.threshold(backgroundMask, 127, 255, cv2.THRESH_BINARY)
-            temp_bkgr = cv2.bitwise_and(currentFrame, currentFrame, mask=blackAndWhiteImage)
+            temp_bkgr = cv2.bitwise_and(cleanFrame, cleanFrame, mask=blackAndWhiteImage)
 
             if firstMaskDrawing:
                 firstMaskDrawing = False
@@ -148,9 +143,11 @@ def main():
                     new_background = overall_background.copy()
                 else:
                     overall_background[temp_bkgr > 0] = 0
+                    new_background[overall_background > 0] = 0
+                    new_background[temp_bkgr > 0] = 0
                     new_background = cv2.add(overall_background, temp_bkgr)
 
-
+            cv2.imwrite("background.jpg", new_background)
 
         if len(new_background) != 0:
             # Display on APP
@@ -162,6 +159,10 @@ def main():
         #Debugging
 
     window.close()
+    print("Creating final videos")
+    md.run_model(video_filename)
+    print("Final video created as final_vid.mp4 with background image given or the road background")
+    print("Final video also created with a green screen")
 
 
 main()
