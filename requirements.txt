@@ -3,3 +3,4 @@ pysimplegui
 pygame
 opencv-python
 matplotlib
+gdown

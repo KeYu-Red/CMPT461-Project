@@ -32,7 +32,7 @@ class DrawMask:
                 break
             elif cv2.waitKey(1) & 0xFF == ord('+'):
                 self.brush_size += 3
-                if self.brush_size > 50: self.brush_size = 50
+                if self.brush_size > 70: self.brush_size = 70
             elif cv2.waitKey(1) & 0xFF == ord('-'):
                 self.brush_size -= 3
                 if self.brush_size < 5: self.brush_size = 5

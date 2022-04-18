@@ -8,17 +8,20 @@ def main():
     title = [sg.Text("CMPT461 Project", size=(60, 1), justification="center")]
     file_list_column = [
         [
-            sg.Text("Image Folder"),
+            sg.Text("Video Folder"),
             sg.In(size=(25, 1), enable_events=True, key="-FOLDER-"),
             sg.FolderBrowse(),
-            sg.Listbox(values=[], enable_events=True, size=(20, 5), key="-FILE LIST-")
+            sg.Listbox(values=[], enable_events=True, size=(20, 5), key="-FILE LIST-"),
+            sg.Text("Workspace Folder"),
+            sg.In(size=(25, 1), enable_events=True, key="-WORKSPACE-FOLDER-"),
+            sg.FolderBrowse()
         ]
     ]
 
     playVideo = [sg.Radio("Play Video", "Radio", size=(10, 1), default=True, key="-PLAY-")]
     pauseVideo = [
         [sg.Radio("Pause Video", "Radio", size=(10, 1), key="-PAUSE-"), sg.Button("Mask Edit", size=(10, 1), key="-DRAW-MASK-")],
-        [sg.Text("Brush Size", key="-BRUSH-SIZE-TEXT-"), sg.Slider(range=(5,45), default_value= 20, resolution=5, orientation="h", size=(20, 15), key="-BRUSH-SIZE-")],
+        [sg.Text("Brush Size", key="-BRUSH-SIZE-TEXT-"), sg.Slider(range=(5,70), default_value= 20, resolution=5, orientation="h", size=(20, 15), key="-BRUSH-SIZE-")],
         [sg.Text("1: Draw  2:Erase"), sg.Slider(range=(1,2), default_value= 1, resolution=1, orientation="h", size=(20, 15), key="-BRUSH-OPTION-")],
         [sg.Button("Done", size=(10, 1), key="-DONE-")],
 
@@ -56,6 +59,8 @@ def main():
 
     ############################################################
     video_filename = ""
+    saved_background_path = "../workspace/background.jpg"
+    workspace_path = "../workspace"
     cap = None
 
     while True:
@@ -93,13 +98,20 @@ def main():
 
             except:
                 pass
+        elif event == "-WORKSPACE-FOLDER-":
+            workspace_folder = values["-WORKSPACE-FOLDER-"]
+            #print(workspace_folder)
+            workspace_path = str(workspace_folder) + "/"
+            saved_background_path = workspace_path + "background.jpg"
+        
         elif event == "-DRAW-MASK-":
             if allowDrawMask:
                 drawBGMask = True
 
         elif event == "-DONE-":
-            cv2.imwrite("background.jpg", new_background)
-            md.run_model(video_filename)
+            print("saved_background_path: ", saved_background_path)
+            cv2.imwrite(saved_background_path, new_background)
+            md.Model(workspace_path=workspace_path).run_model(video_filename)
             print("Final video created as final_vid.mp4 with background image given or the road background")
             print("Final video also created with a green screen")
             break
@@ -142,13 +154,15 @@ def main():
                 firstMaskDrawing = False
                 new_background = temp_bkgr.copy()
             else:
-                overall_background = cv2.imread("background.jpg")
+                overall_background = cv2.imread(saved_background_path)
                 if values["-BRUSH-OPTION-"] == 2:
                     overall_background[temp_bkgr > 0] = 0
                     new_background = overall_background.copy()
                 else:
                     overall_background[temp_bkgr > 0] = 0
                     new_background = cv2.add(overall_background, temp_bkgr)
+            print("saved_background_path: ", saved_background_path)
+            cv2.imwrite(saved_background_path, new_background)
 
 
 
