@@ -56,8 +56,6 @@ def main():
     backgroundMask = []
     new_background = []
     temp_bkgr = []
-
-
     ############################################################
     video_filename = ""
     saved_background_path = "../workspace/background.jpg"
@@ -101,7 +99,6 @@ def main():
                 pass
         elif event == "-WORKSPACE-FOLDER-":
             workspace_folder = values["-WORKSPACE-FOLDER-"]
-            #print(workspace_folder)
             workspace_path = str(workspace_folder) + "/"
             saved_background_path = workspace_path + "background.jpg"
 
