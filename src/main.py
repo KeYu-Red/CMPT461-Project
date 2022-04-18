@@ -112,9 +112,6 @@ def main():
         elif event == "-DONE-":
             print("saved_background_path: ", saved_background_path)
             cv2.imwrite(saved_background_path, new_background)
-            md.Model(workspace_path=workspace_path).run_model(video_filename)
-            print("Final video created as final_vid.mp4 with background image given or the road background")
-            print("Final video also created with a green screen")
             break
 
         elif values["-PAUSE-"]:
@@ -179,7 +176,7 @@ def main():
 
     window.close()
     print("Creating final videos")
-    md.run_model(video_filename)
+    md.Model(workspace_path=workspace_path).run_model(video_filename)
     print("Final video created as final_vid.mp4 with background image given or the road background")
     print("Final video also created with a green screen")
 
