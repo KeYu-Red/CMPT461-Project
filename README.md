@@ -1,6 +1,8 @@
 # CMPT461-Project
 This is the project repo for CMPT461
-The idea is to create an application that will enable the users to select a video of their choice and interact with that video to select as much as the background possible. 
+
+### Approach
+The idea is to create an application that will enable the users to select a video of their choice and interact with that video to select as much as the background possible. The user pauses the video at their desired frame and uses the brush to paint over the background. This will generate an image with as many background images as the user selects. When the user is happy with the result shown on the right-hand side, they can press “Done” and let the Background Matting V2 model (https://arxiv.org/abs/2012.07810) take care of generating two videos, one with a green screen and one with a background image of a road.
 
 ## Watch our project video
 https://www.youtube.com/watch?v=73qDL7ux2JQ
