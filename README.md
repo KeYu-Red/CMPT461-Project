@@ -9,7 +9,7 @@ The idea is to create an application that will enable the users to select a vide
 ## Watch our project video
 https://www.youtube.com/watch?v=73qDL7ux2JQ
 
-## What our demos
+## Watch our demos
 There are two demos of the use case of the application, which can be downloaded and watched:
 https://drive.google.com/drive/folders/1TNt7uIxVBlv5aQSx-PjTGojLMrrpr9EA?usp=sharing
 
